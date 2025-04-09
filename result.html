@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>채택 결과</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .result-box {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #e0f7fa;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h1>채택 결과</h1>
+    <div class="result-box" id="resultBox">
+      <p>결과를 불러오는 중입니다...</p>
+    </div>
+  </div>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || user.role !== "writer") {
+      alert("접근 권한이 없습니다.");
+      location.href = "index.html";
+    }
+
+    const selections = JSON.parse(localStorage.getItem("selections") || "{}");
+
+    function findSelector(name) {
+      for (let selector in selections) {
+        if (selections[selector].includes(name)) {
+          return selector;
+        }
+      }
+      return null;
+    }
+
+    const result = findSelector(user.name);
+    const resultBox = document.getElementById("resultBox");
+
+    if (result) {
+      resultBox.innerHTML = `<p><strong>${user.name}</strong> 님은 <strong>${result}</strong> 님에게 채택되었습니다!</p>`;
+    } else {
+      resultBox.innerHTML = `<p><strong>${user.name}</strong> 님은 아무에게도 채택되지 않았습니다.</p>`;
+    }
+  </script>
+</body>
+</html>
