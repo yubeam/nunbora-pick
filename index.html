@@ -1,50 +1,18 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>눈보라 랜덤 차 배정</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 30px;
-      background-color: #f0f8ff;
-    }
-    h1 {
-      color: #2a5d84;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin-top: 20px;
-      cursor: pointer;
-    }
-    #result {
-      margin-top: 30px;
-      font-size: 18px;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>눈보라 자기소개 채택</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <h1>눈보라 랜덤 차 배정</h1>
-  <p>석규를 제외하고 무작위로 둘둘 나눕니다!</p>
-  <button onclick="assignCars()">차 배정 시작!</button>
-  
-  <div id="result"></div>
-
-  <script>
-    function assignCars() {
-      const participants = ['유빈', '김민', '윤표', '선엽'];
-      const shuffled = participants.sort(() => Math.random() - 0.5);
-      const taewu = shuffled.slice(0, 2);
-      const gyeongmin = shuffled.slice(2);
-
-      const resultDiv = document.getElementById('result');
-      resultDiv.innerHTML = `
-        <h2>배정 결과</h2>
-        <p><strong>태우차:</strong> ${taewu.join(', ')}</p>
-        <p><strong>경민차:</strong> ${gyeongmin.join(', ')}</p>
-      `;
-    }
-  </script>
+  <div class="login-box">
+    <h1>눈보라 등산 멤버 로그인</h1>
+    <input type="text" id="username" placeholder="이름 (예: 김민)" />
+    <input type="password" id="password" placeholder="생년월일 6자리 (예: 990824)" />
+    <button onclick="login()">로그인</button>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
