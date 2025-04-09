@@ -3,39 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <title>자기소개 작성</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
-      font-size: 18px;
-      padding: 20px;
+      margin: 0;
+      font-family: sans-serif;
+      background-color: #f5faf9;
     }
-
+    .login-box {
+      max-width: 400px;
+      width: 90%;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
     textarea {
       width: 100%;
-      font-size: 16px;
       padding: 10px;
+      font-size: 16px;
       border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: none;
+      margin-bottom: 10px;
     }
-
+    button {
+      background-color: #337eff;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
     .postit {
-      width: 90%;
-      max-width: 320px;
-      height: 140px;
+      width: 240px;
+      height: 130px;
       padding: 10px;
       border-radius: 10px;
       box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
       white-space: pre-wrap;
-      background-color: #ffff88;
-      margin: 10px auto;
+      margin: 10px;
+      display: inline-block;
+      vertical-align: top;
+      word-break: break-word;
     }
-
     .result {
       margin-top: 30px;
       font-size: 18px;
       font-weight: bold;
-      text-align: center;
     }
-
     .reset-btn {
       margin-top: 20px;
       background-color: #ff6666;
@@ -45,17 +64,10 @@
       border-radius: 8px;
       cursor: pointer;
     }
-
-    .postit-board {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 20px;
-    }
-
-    h2 {
+    .postit-container {
+      max-width: 1000px;
+      margin: 30px auto;
       text-align: center;
-      margin-top: 40px;
     }
   </style>
 </head>
@@ -65,14 +77,12 @@
     <textarea id="intro" placeholder="자기소개를 입력하세요." rows="8"></textarea><br />
     <button onclick="saveIntro()">등록 / 수정하기</button>
 
-    <div id="myPost" class="postit" style="display:none;"></div>
     <div id="result" class="result"></div>
 
     <button id="resetBtn" class="reset-btn" style="display:none;" onclick="resetAll()">초기화</button>
-
-    <h2>등록된 모든 자기소개</h2>
-    <div id="allPosts" class="postit-board"></div>
   </div>
+
+  <div class="postit-container" id="allPosts"></div>
 
   <script>
     const user = JSON.parse(localStorage.getItem("user"));
@@ -82,10 +92,9 @@
     }
 
     const introBox = document.getElementById("intro");
-    const myPost = document.getElementById("myPost");
     const resultBox = document.getElementById("result");
     const resetBtn = document.getElementById("resetBtn");
-    const allPostContainer = document.getElementById("allPosts");
+    const postitContainer = document.getElementById("allPosts");
 
     if (user.name === "오유빈") {
       resetBtn.style.display = "inline-block";
@@ -95,10 +104,16 @@
     const myIntro = introductions.find(i => i.writer === user.name);
     if (myIntro) {
       introBox.value = myIntro.text;
-      myPost.textContent = myIntro.text;
-      myPost.style.backgroundColor = myIntro.color;
-      myPost.style.display = "block";
     }
+
+    // 포스트잇 모두 보여주기
+    introductions.forEach(i => {
+      const post = document.createElement("div");
+      post.className = "postit";
+      post.style.backgroundColor = i.color || "#ffff88";
+      post.innerText = `${i.writer}\n\n${i.text}`;
+      postitContainer.appendChild(post);
+    });
 
     function saveIntro() {
       const text = introBox.value.trim();
@@ -130,7 +145,7 @@
       }
     }
 
-    // 채택 결과 보여주기
+    // 채택 결과
     const selections = JSON.parse(localStorage.getItem("selections") || "{}");
     const allSelected = (selections["김태우"]?.length === 2 && selections["이경민"]?.length === 2);
 
@@ -147,20 +162,6 @@
     } else {
       resultBox.innerText = "채택 대기 중입니다.";
     }
-
-    // 모든 포스트잇 보여주기
-    function renderAllPosts() {
-      allPostContainer.innerHTML = "";
-      introductions.forEach(post => {
-        const div = document.createElement("div");
-        div.className = "postit";
-        div.style.backgroundColor = post.color;
-        div.textContent = post.text;
-        allPostContainer.appendChild(div);
-      });
-    }
-
-    renderAllPosts();
   </script>
 </body>
 </html>
