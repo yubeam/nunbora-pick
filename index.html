@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>눈보라 랜덤 차 배정</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 30px;
+      background-color: #f0f8ff;
+    }
+    h1 {
+      color: #2a5d84;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 30px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>눈보라 랜덤 차 배정</h1>
+  <p>아래 버튼을 누르면 참가자들이 무작위로 배정됩니다.</p>
+  <button onclick="assignCars()">차 배정 시작!</button>
+  
+  <div id="result"></div>
+
+  <script>
+    function assignCars() {
+      const participants = ['유빈', '김민', '석규', '윤표', '선엽'];
+      // 3명은 태우차, 2명은 경민차
+      const shuffled = participants.sort(() => Math.random() - 0.5);
+      const taewu = shuffled.slice(0, 3);
+      const gyeongmin = shuffled.slice(3);
+    
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = `
+        <h2>배정 결과</h2>
+        <p><strong>태우차:</strong> ${taewu.join(', ')}</p>
+        <p><strong>경민차:</strong> ${gyeongmin.join(', ')}</p>
+      `;
+    }
+  </script>
+</body>
+</html>
