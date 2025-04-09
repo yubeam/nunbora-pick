@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>로그인</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 50px; }
+    input, select, button { margin: 10px; padding: 10px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>로그인</h1>
+  <input type="text" id="name" placeholder="이름 입력" /><br/>
+  <select id="role">
+    <option value="writer">참가자</option>
+    <option value="picker">채택자</option>
+  </select><br/>
+  <button onclick="login()">로그인</button>
+
+  <script>
+    function login() {
+      const name = document.getElementById("name").value.trim();
+      const role = document.getElementById("role").value;
+      if (!name) {
+        alert("이름을 입력해주세요.");
+        return;
+      }
+      localStorage.setItem("user", JSON.stringify({ name, role }));
+      alert("로그인 완료! 다음 페이지로 이동해주세요.");
+      // location.href = "intro.html"; // 자동 이동하려면 사용
+    }
+  </script>
+</body>
+</html>
