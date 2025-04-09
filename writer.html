@@ -2,46 +2,46 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>자기소개 작성</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    .postit-board {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      margin-top: 20px;
-    }
-    .postit {
-      width: 200px;
-      height: 200px;
-      padding: 15px;
-      background-color: #fffc9e;
-      border: 2px solid #ddd;
-      box-shadow: 3px 3px 5px rgba(0,0,0,0.1);
-      font-size: 14px;
-      white-space: pre-wrap;
-    }
+    /* 스타일 생략 */
   </style>
 </head>
 <body>
   <div class="login-box">
     <h1>자기소개 작성</h1>
     <textarea id="intro" rows="8" cols="30" placeholder="여기에 자기소개를 써주세요"></textarea>
-    <button onclick="submitIntro()">등록</button>
-    <div id="done" style="display:none; margin-top:20px;">
-      <p>자기소개가 등록되었습니다!</p>
-      <div class="postit-board" id="board"></div>
-    </div>
+    <button onclick="submitIntro()">저장하기</button>
+    <button id="resetBtn" onclick="resetAll()" style="margin-top:10px; display:none;">전체 초기화</button>
+
+    <div class="postit-board" id="board"></div>
   </div>
 
   <script>
+    // [1] 로그인 유효성 검사
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user || user.role !== "writer") {
       alert("접근 권한이 없습니다.");
       location.href = "index.html";
     }
 
+    // [2] 초기화 버튼 표시 여부 (오유빈만)
+    if (user.name === "오유빈") {
+      document.getElementById("resetBtn").style.display = "inline-block";
+    }
+
+    // [3] 전체 초기화 함수
+    function resetAll() {
+      if (confirm("모든 자기소개와 채택 정보를 초기화할까요?")) {
+        localStorage.removeItem("introductions");
+        localStorage.removeItem("selections");
+        alert("초기화 완료!");
+        location.reload();
+      }
+    }
+
+    // [4] 자기소개 저장 or 수정 함수
     function submitIntro() {
       const text = document.getElementById("intro").value.trim();
       if (text === "") {
@@ -49,27 +49,27 @@
         return;
       }
 
-      // 랜덤 색상
-      const colors = ["#fffc9e", "#caffbf", "#ffd6a5", "#9bf6ff"];
-      const myColor = colors[Math.floor(Math.random() * colors.length)];
+      const colorList = ["#fffc9e", "#caffbf", "#ffd6a5", "#9bf6ff"];
+      let intros = JSON.parse(localStorage.getItem("introductions") || "[]");
 
-      const intro = {
-        text,
-        color: myColor,
-        writer: user.name
-      };
+      const idx = intros.findIndex(p => p.writer === user.name);
+      if (idx !== -1) {
+        intros[idx].text = text;  // 수정
+      } else {
+        const newPost = {
+          writer: user.name,
+          text,
+          color: colorList[Math.floor(Math.random() * colorList.length)]
+        };
+        intros.push(newPost);  // 새로 등록
+      }
 
-      const saved = JSON.parse(localStorage.getItem("introductions") || "[]");
-      saved.push(intro);
-      localStorage.setItem("introductions", JSON.stringify(saved));
-
-      document.getElementById("intro").style.display = "none";
-      document.querySelector("button").style.display = "none";
-      document.getElementById("done").style.display = "block";
-
-      showPosts(saved);
+      localStorage.setItem("introductions", JSON.stringify(intros));
+      alert("저장되었습니다.");
+      showPosts(intros);
     }
 
+    // [5] 등록된 자기소개 게시판에 출력
     function showPosts(data) {
       const board = document.getElementById("board");
       board.innerHTML = "";
@@ -82,12 +82,11 @@
       });
     }
 
-    // 이미 작성했으면 보여주기
+    // [6] 본인 자기소개 불러오기
     const intros = JSON.parse(localStorage.getItem("introductions") || "[]");
-    if (intros.find(p => p.writer === user.name)) {
-      document.getElementById("intro").style.display = "none";
-      document.querySelector("button").style.display = "none";
-      document.getElementById("done").style.display = "block";
+    const myIntro = intros.find(p => p.writer === user.name);
+    if (myIntro) {
+      document.getElementById("intro").value = myIntro.text;
       showPosts(intros);
     }
   </script>
