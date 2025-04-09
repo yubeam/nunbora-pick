@@ -10,73 +10,55 @@
       font-size: 18px;
       padding: 20px;
     }
-
-    .login-box {
-      max-width: 500px;
-      margin: auto;
-    }
-
     textarea {
+      font-size: 16px;
       width: 100%;
-      font-size: 16px;
-      padding: 12px;
-      box-sizing: border-box;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
+      max-width: 400px;
     }
-
-    button {
-      font-size: 16px;
-      padding: 12px 20px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-    }
-
     .postit {
-      width: 100%;
-      height: auto;
-      min-height: 200px;
-      padding: 15px;
+      width: 250px;
+      height: 180px;
+      padding: 10px;
       border-radius: 10px;
       box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
       white-space: pre-wrap;
       background-color: #ffff88;
       margin-top: 20px;
-      font-size: 16px;
     }
-
+    .postit-board {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+      justify-content: center;
+    }
     .result {
       margin-top: 30px;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: bold;
-      text-align: center;
     }
-
     .reset-btn {
       margin-top: 20px;
       background-color: #ff6666;
       color: white;
-      padding: 12px 20px;
+      padding: 10px;
       border: none;
       border-radius: 8px;
-      font-size: 16px;
       cursor: pointer;
-      width: 100%;
     }
   </style>
 </head>
 <body>
   <div class="login-box">
-    <h1 style="text-align:center;">자기소개 작성</h1>
-    <textarea id="intro" placeholder="자기소개를 입력하세요." rows="10"></textarea><br />
-    <button onclick="saveIntro()" style="width:100%; background-color:#4CAF50; color:white;">등록 / 수정하기</button>
+    <h1>자기소개 작성</h1>
+    <textarea id="intro" placeholder="자기소개를 입력하세요." rows="8" cols="30"></textarea><br />
+    <button onclick="saveIntro()">등록 / 수정하기</button>
 
     <div id="myPost" class="postit" style="display:none;"></div>
     <div id="result" class="result"></div>
 
     <button id="resetBtn" class="reset-btn" style="display:none;" onclick="resetAll()">초기화</button>
+    <div id="allPosts" class="postit-board" style="display:none;"></div>
   </div>
 
   <script>
@@ -148,6 +130,18 @@
       } else {
         resultBox.innerText = "아쉽게도 채택되지 않았습니다.";
       }
+
+      // 전체 포스트잇 보여주기
+      const allPostDiv = document.getElementById("allPosts");
+      allPostDiv.style.display = "flex";
+      introductions.forEach(post => {
+        const div = document.createElement("div");
+        div.className = "postit";
+        div.style.backgroundColor = post.color;
+        div.textContent = post.text + (post.writer === user.name ? `\n\n(내 글)` : "");
+        allPostDiv.appendChild(div);
+      });
+
     } else {
       resultBox.innerText = "채택 대기 중입니다.";
     }
