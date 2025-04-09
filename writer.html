@@ -107,7 +107,23 @@
     <div class="post-container" id="allPosts"></div>
   </div>
 
-  <script>
+  <!-- Firebase 설정 및 Firestore 연결 -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, getDocs, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAPs4r4TZjwuY_ZvXBCC09...",
+      authDomain: "kkalkki-s-project.firebaseapp.com",
+      projectId: "kkalkki-s-project",
+      storageBucket: "kkalkki-s-project.appspot.com",
+      messagingSenderId: "79394027364",
+      appId: "1:79394027364:web:9f8f580df88e5ade08ec71"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user || user.role !== "writer") {
       alert("접근 권한이 없습니다.");
@@ -123,32 +139,48 @@
       resetBtn.style.display = "inline-block";
     }
 
-    let introductions = JSON.parse(localStorage.getItem("introductions") || "[]");
-    const myIntro = introductions.find(i => i.writer === user.name);
-    if (myIntro) {
-      introBox.value = myIntro.text;
-    }
-
-    function saveIntro() {
+    async function saveIntro() {
       const text = introBox.value.trim();
       if (!text) {
         alert("자기소개를 입력해주세요.");
         return;
       }
 
-      const color = myIntro?.color || randomColor();
-      introductions = introductions.filter(i => i.writer !== user.name);
-      introductions.push({ writer: user.name, text, color });
-      localStorage.setItem("introductions", JSON.stringify(introductions));
+      const color = randomColor();
+      await setDoc(doc(db, "introductions", user.name), {
+        writer: user.name,
+        text,
+        color,
+      });
+
       alert("자기소개가 저장되었습니다.");
       location.reload();
     }
 
-    function resetAll() {
+    async function loadIntroductions() {
+      const querySnapshot = await getDocs(collection(db, "introductions"));
+      querySnapshot.forEach(docSnap => {
+        const post = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "postit";
+        div.textContent = post.text;
+        div.style.backgroundColor = post.color;
+        postContainer.appendChild(div);
+      });
+
+      const myDoc = await getDoc(doc(db, "introductions", user.name));
+      if (myDoc.exists()) {
+        introBox.value = myDoc.data().text;
+      }
+    }
+
+    async function resetAll() {
       if (confirm("정말 모든 데이터를 초기화할까요?")) {
-        localStorage.removeItem("introductions");
-        localStorage.removeItem("selections");
-        alert("모든 데이터가 초기화되었습니다.");
+        const querySnapshot = await getDocs(collection(db, "introductions"));
+        for (const docSnap of querySnapshot.docs) {
+          await deleteDoc(doc(db, "introductions", docSnap.id));
+        }
+        alert("모든 자기소개가 삭제되었습니다.");
         location.reload();
       }
     }
@@ -158,30 +190,7 @@
       return colors[Math.floor(Math.random() * colors.length)];
     }
 
-    const selections = JSON.parse(localStorage.getItem("selections") || "{}");
-    const allSelected = (selections["김태우"]?.length === 2 && selections["이경민"]?.length === 2);
-
-    if (allSelected) {
-      let pickedBy = null;
-      if (selections["김태우"]?.includes(user.name)) pickedBy = "김태우";
-      if (selections["이경민"]?.includes(user.name)) pickedBy = "이경민";
-
-      if (pickedBy) {
-        resultBox.innerText = `당신은 ${pickedBy}님에게 채택되었어요!`;
-      } else {
-        resultBox.innerText = "아쉽게도 채택되지 않았습니다.";
-      }
-    } else {
-      resultBox.innerText = "채택 대기 중입니다.";
-    }
-
-    introductions.forEach(post => {
-      const div = document.createElement("div");
-      div.className = "postit";
-      div.textContent = post.text;
-      div.style.backgroundColor = post.color;
-      postContainer.appendChild(div);
-    });
+    loadIntroductions();
   </script>
 </body>
 </html>
