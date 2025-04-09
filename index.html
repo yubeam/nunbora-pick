@@ -26,19 +26,18 @@
 </head>
 <body>
   <h1>눈보라 랜덤 차 배정</h1>
-  <p>아래 버튼을 누르면 참가자들이 무작위로 배정됩니다.</p>
+  <p>석규를 제외하고 무작위로 둘둘 나눕니다!</p>
   <button onclick="assignCars()">차 배정 시작!</button>
   
   <div id="result"></div>
 
   <script>
     function assignCars() {
-      const participants = ['유빈', '김민', '석규', '윤표', '선엽'];
-      // 3명은 태우차, 2명은 경민차
+      const participants = ['유빈', '김민', '윤표', '선엽'];
       const shuffled = participants.sort(() => Math.random() - 0.5);
-      const taewu = shuffled.slice(0, 3);
-      const gyeongmin = shuffled.slice(3);
-    
+      const taewu = shuffled.slice(0, 2);
+      const gyeongmin = shuffled.slice(2);
+
       const resultDiv = document.getElementById('result');
       resultDiv.innerHTML = `
         <h2>배정 결과</h2>
