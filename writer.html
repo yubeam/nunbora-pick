@@ -20,6 +20,15 @@
       font-size: 18px;
       font-weight: bold;
     }
+    .reset-btn {
+      margin-top: 20px;
+      background-color: #ff6666;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -30,6 +39,8 @@
 
     <div id="myPost" class="postit" style="display:none;"></div>
     <div id="result" class="result"></div>
+
+    <button id="resetBtn" class="reset-btn" style="display:none;" onclick="resetAll()">초기화</button>
   </div>
 
   <script>
@@ -42,6 +53,11 @@
     const introBox = document.getElementById("intro");
     const myPost = document.getElementById("myPost");
     const resultBox = document.getElementById("result");
+    const resetBtn = document.getElementById("resetBtn");
+
+    if (user.name === "오유빈") {
+      resetBtn.style.display = "inline-block";
+    }
 
     const introductions = JSON.parse(localStorage.getItem("introductions") || "[]");
     const myIntro = introductions.find(i => i.writer === user.name);
@@ -71,6 +87,15 @@
     function randomColor() {
       const colors = ["#ffff88", "#ffcccb", "#ccffcc", "#ccccff", "#ffd700"];
       return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function resetAll() {
+      if (confirm("정말 모든 데이터를 초기화할까요?")) {
+        localStorage.removeItem("introductions");
+        localStorage.removeItem("selections");
+        alert("모든 데이터가 초기화되었습니다.");
+        location.reload();
+      }
     }
 
     // 채택 결과 보여주기
